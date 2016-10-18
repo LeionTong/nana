@@ -129,7 +129,7 @@ Example output:
 #### 1. Print nothing?
 Please check log_format of http module in your nginx configurations file(/etc/nginx/nginx.conf), which should be in the following format:
 
-    $remote_addr - $remote_user [$time_local] "$request" $status  $body_bytes_sent $request_time $upstream_response_time $upstream_addr "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+    $remote_addr - $remote_user [$time_local] "$request" $status  $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time $upstream_response_time $upstream_addr';
 
     // Example: 
     183.63.**.** - - [21/Mar/2016:03:53:41 +0800] "GET /url HTTP/1.1" 200 100759 0.255 0.105 "-" "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13B143" "-"
@@ -140,8 +140,8 @@ You could use awk to check whether it works:
     less /var/log/ngin/main.log | awk '{print $4}' | head -n 1 // should print timestamps  
     less /var/log/ngin/main.log | awk '{print $7}' | head -n 1 // should print urls  
     less /var/log/ngin/main.log | awk '{print $10}' | head -n 1 // should print size of reponse body  
-    less /var/log/ngin/main.log | awk '{print $11}' | head -n 1 // should print request time  
-    less /var/log/ngin/main.log | awk '{print $13}' | head -n 1 // should print upstream server address
+    less /var/log/ngin/main.log | awk '{print $(NF-2)}' | head -n 1 // should print request time  
+    less /var/log/ngin/main.log | awk '{print $(NF)}' | head -n 1 // should print upstream server address
 
 #### 2. sed: illegal option -- r?
 Extended regular expression is used in shell scripts, if you encounter such an error, please check to use correct option, such as '-r' in Unix and '-E' in mac.
