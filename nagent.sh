@@ -46,7 +46,7 @@ less $file | awk -F '"' '{if($6~"spider|Spider|bot"){print $6}}' | awk '{name=$3
 
 echo ""
 echo "[iPhone Version Details]"
-less $file | awk -F '"' '{if($6~"iPhone"){print $6}}' | awk '{name=$6;if($6=="OS"){name=$7};types[name]++} END{for(name in types){printf("%s %s\n",types[name], name)}}' | sort -nr
+less $file | awk -F '"' '{if($6~"iPhone"){print $6}}' | awk '{name=$3;if($3=="iOS"){name=$4};types[name]++} END{for(name in types){printf("%s %s\n",types[name], name)}}' | sort -nr
 
 echo ""
 echo "[Android Version Details]"
