@@ -44,7 +44,7 @@ fi
 # m: max; a: average; c: count
 # S: second; U: url; R: request; T: total; US: up server
 read countTotal avgCountByS maxCountByS maxCountS maxCountByU maxCountU <<< `less $file | awk '
-{sec =$4;time=$11; split($7,urls,"?"); url=urls[1];countTotal++; countByS[sec]++; countByU[url]++;} 
+{sec =$4;time=$(NF-2); split($7,urls,"?"); url=urls[1];countTotal++; countByS[sec]++; countByU[url]++;} 
 END{maxCountS="";maxCountByS=0; 
     for(s in countByS){if(countByS[s] > maxCountByS){maxCountByS = countByS[s]; maxCountS=s}}; 
     avgCountByS=countTotal/length(countByS);maxCountU="";maxCountByU=0;
@@ -60,12 +60,12 @@ echo "      max count ${maxCountByU} of url ${maxCountU}"
 echo ""
 echo "[Busiest Moments By Seconds]"
 echo "Page Visits \t Response Size \t Time Spent/req \t Moment \t"
-less $file | awk '{second=substr($4, 2, 17);reqs[second]++; bytes[second]+=$10; times[second]+=$11;} END{for(s in reqs){printf("%s %sKB %s %s\n", reqs[s], bytes[s] / 1024, times[s]/reqs[s], s)}}' | sort -nr | head -n ${lineCount}
+less $file | awk '{second=substr($4, 2, 17);reqs[second]++; bytes[second]+=$10; times[second]+=$(NF-2);} END{for(s in reqs){printf("%s %sKB %s %s\n", reqs[s], bytes[s] / 1024, times[s]/reqs[s], s)}}' | sort -nr | head -n ${lineCount}
 
 echo ""
 echo "[Busiest Moments By Every 5 Minutes]"
 echo "Page Visits \t Response Size \t Time Spent/req \t Moment \t"
-less $file | awk '{hour=substr($4,2,14);min=substr($4,17,2);min=min-min%5;if(min<10){min=hour":0"min;}else{min=hour":"min}; reqs[min]++; bytes[min]+=$10; times[min]+=$11;} END{totalReqs=0;for(m in reqs){totalReqs+=reqs[m]};avgReqsPerMin=totalReqs/length(reqs);for(m in reqs){printf("%s %s %sMB %ss\n", m,reqs[m], bytes[m] / 1024 / 1024, times[m]/reqs[m])}}' | sort
+less $file | awk '{hour=substr($4,2,14);min=substr($4,17,2);min=min-min%5;if(min<10){min=hour":0"min;}else{min=hour":"min}; reqs[min]++; bytes[min]+=$10; times[min]+=$(NF-2);} END{totalReqs=0;for(m in reqs){totalReqs+=reqs[m]};avgReqsPerMin=totalReqs/length(reqs);for(m in reqs){printf("%s %s %sMB %ss\n", m,reqs[m], bytes[m] / 1024 / 1024, times[m]/reqs[m])}}' | sort
 
 echo ""
 echo "[Busiest Urls]"

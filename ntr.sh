@@ -47,7 +47,7 @@ fi
 echo "Traffic and Rate Summary: "
 
 read bytesTotal avgBytesByR avgRateByS maxRateS maxRateByS maxBytesU maxBytesByU avgTimeByR <<< `less $file | awk -v limit=3 '
-{sec =$4;time=$11; bytes=$10; split($7,urls,"?"); url=urls[1];code=$9;
+{sec =$4;time=$(NF-2); bytes=$10; split($7,urls,"?"); url=urls[1];code=$9;
     countTotal++;timeTotal+=time; bytesTotal+=bytes; 
     countByS[sec]++; countByU[url]++; countByIp[ip]++;
     bytesByS[sec]+=bytes; bytesByU[url]+=bytes;
@@ -75,7 +75,7 @@ echo "      average response time ${avgTimeByR}s/req"
 echo ""
 echo "[Traffic by Seconds]"
 echo "Traffic \t Rate \t Moment \t"
-less $file | awk '{second=$4;bytes[second]+=$10;time[second]+=$11} END{for(s in bytes){if(time[s] > 0){printf("%sKB %sKB/s %s\n", bytes[s]/1024, bytes[s]/time[s]/1024, s)}}}' | sort -nr | head -n ${lineCount}
+less $file | awk '{second=$4;bytes[second]+=$10;time[second]+=$(NF-2)} END{for(s in bytes){if(time[s] > 0){printf("%sKB %sKB/s %s\n", bytes[s]/1024, bytes[s]/time[s]/1024, s)}}}' | sort -nr | head -n ${lineCount}
 
 echo ""
 echo "[Response Size by Urls]"
@@ -85,10 +85,10 @@ less $file | awk '{split($7,urls,"?"); url=urls[1]; print url, $10}' | sed -e 's
 echo ""
 echo "[Response time by Url]"
 echo "Total Time \t Response Time/req \t requests count \t url"
-less $file | awk '{split($7,urls,"?"); url=urls[1]; print url, $11}' | sed -e 's:.json::' -re 's/[0-9]+([\/| ])/*\1/g' | awk '{requests[$1]++;time[$1]+=$2} END{for(url in requests){printf("%s %s %s %s\n", time[url], time[url] /requests[url], requests[url], url)}}' | sort -nr | head -n ${lineCount}| awk '{printf("%smin %ss/req %s %s\n", $1/60, $2, $3, $4)}'
+less $file | awk '{split($7,urls,"?"); url=urls[1]; print url, $(NF-2)}' | sed -e 's:.json::' -re 's/[0-9]+([\/| ])/*\1/g' | awk '{requests[$1]++;time[$1]+=$2} END{for(url in requests){printf("%s %s %s %s\n", time[url], time[url] /requests[url], requests[url], url)}}' | sort -nr | head -n ${lineCount}| awk '{printf("%smin %ss/req %s %s\n", $1/60, $2, $3, $4)}'
 
 echo ""
 echo "[Response time Trends]"
 echo "Moment \t requests count \t Response Time/req \t Reponse Size"
-less $file | awk '{hour=substr($4,2,14);bytes[hour]+=$10;time[hour]+=$11;requests[hour]++} END{for(h in bytes){if(time[h] > 0){printf("%s %s %ss %sMB\n", h, requests[h], time[h]/requests[h], bytes[h]/1024/1024)}}}' | sort -n
+less $file | awk '{hour=substr($4,2,14);bytes[hour]+=$10;time[hour]+=$(NF-2);requests[hour]++} END{for(h in bytes){if(time[h] > 0){printf("%s %s %ss %sMB\n", h, requests[h], time[h]/requests[h], bytes[h]/1024/1024)}}}' | sort -n
 
