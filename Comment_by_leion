@@ -1,0 +1,22 @@
+README.MD
+    $remote_addr - $remote_user [$time_local] "$request" $status  $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time $upstream_response_time $upstream_addr';
+
+
+Update to a more common access log-format
+
+Update to a more common access log-format and change the awk print option to adapt to it .
+So, next time I put in new variables that I mean to focus on into log-formate before variable $request_time ,I just need to fine-tune the awk print $(NF-<#>). Meanwhile I can throw what I doesn't care about into the line just following "$http_x_forwarded_for".
+
+
+
+nagent.sh
+fix "iPhone Version Details" mess display
+	echo "[iPhone Version Details]"
+	less $file | awk -F '"' '{if($6~"iPhone"){print $6}}' | awk '{name=$3;if($3=="iOS"){name=$4};types[name]++} END{for(name in types){printf("%s %s\n",types[name], name)}}' | sort -nr
+
+
+
+
+nbalance.sh,npv.sh,ntr.sh
+Change $#>10 to $(NF-<#>)
+# is the number which adapted to the log-format
